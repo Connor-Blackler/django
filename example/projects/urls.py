@@ -1,6 +1,6 @@
 """Urls used with the project app"""
 from django.urls import path
-from .views import project,projects
+from .views import project, projects
 
 
 urlpatterns = [
