@@ -19,7 +19,7 @@ def create_project(request):
     my_form = ProjectForm()
 
     if request.method == "POST":
-        my_form = ProjectForm(request.POST)
+        my_form = ProjectForm(request.POST, request.FILES)
         if my_form.is_valid():
             my_form.save()
             return redirect("projects")
@@ -33,7 +33,7 @@ def update_project(request, pk):
     my_form = ProjectForm(instance=my_project)
 
     if request.method == "POST":
-        my_form = ProjectForm(request.POST, instance=my_project)
+        my_form = ProjectForm(request.POST, request.FILES, instance=my_project)
         if my_form.is_valid():
             my_form.save()
             return redirect("projects")
