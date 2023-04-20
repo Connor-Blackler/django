@@ -1,9 +1,12 @@
 """Urls used with the project app"""
 from django.urls import path
-from .views import project, projects
+from . import views
 
 
 urlpatterns = [
-    path('', projects, name="Projects"),
-    path('projects/<str:pk>/', project, name="project"),
+    path('', views.projects, name="projects"),
+    path('projects/<str:pk>/', views.project, name="project"),
+    path('create-project/', views.create_project, name="create-project"),
+    path('update-project/<str:pk>/', views.update_project, name="update-project"),
+    path('delete-project/<str:pk>/', views.delete_project, name="delete-project"),
 ]
