@@ -3,13 +3,20 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .models import Profile
-from .forms import MyCreationForm
+from .forms import MyCreationForm, EditProfileForm, SkillForm
+from .helpers import search_profiles, paginate_profiles
 
 # Create your views here.
+
+
 def profiles(request):
-    my_profiles = Profile.objects.all()
-    context = {"profiles": my_profiles}
+    my_profiles, search = search_profiles(request)
+    custom_range, my_profiles = paginate_profiles(request, my_profiles, 3)
+
+    context = {"profiles": my_profiles,
+               "filter": search, "custom_range": custom_range}
     return render(request, 'users/profiles.html', context)
 
 
@@ -20,7 +27,7 @@ def user_profile(request, pk: str):
 
     context = {"profile": my_profile,
                "descripted_skills": descripted_skills, "blank_skills": blank_skills}
-    return render(request, 'users/user-profile.html', context)
+    return render(request, 'users/user_profile.html', context)
 
 
 def login_user(request):
@@ -65,7 +72,7 @@ def register_user(request):
             messages.success(request, "User account was successfully created!")
 
             login(request, user)
-            return redirect("profiles")
+            return redirect("edit-profile")
 
         else:
             messages.error(
@@ -73,3 +80,85 @@ def register_user(request):
 
     context = {"page": "register", "form": MyCreationForm()}
     return render(request, "users/login_register.html", context)
+
+
+@login_required(login_url="login")
+def my_profile(request):
+    my_profile = request.user.profile
+    my_skills = my_profile.skill_set.all()
+    projects = my_profile.project_set.all()
+
+    context = {"profile": my_profile,
+               "skills": my_skills, "projects": projects}
+
+    return render(request, "users/account.html", context)
+
+
+@login_required(login_url="login")
+def edit_profile(request):
+    form = EditProfileForm(instance=request.user.profile)
+    context = {"form": form}
+
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, request.FILES,
+                               instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            return redirect("my-profile")
+
+    return render(request, "users/profile_form.html", context)
+
+
+@login_required(login_url="login")
+def create_skill(request):
+    my_profile = request.user.profile
+    form = SkillForm()
+
+    if request.method == "POST":
+        form = SkillForm(request.POST)
+        if form.is_valid():
+            skill = form.save(commit=False)
+            skill.owner = my_profile
+            skill.save()
+            messages.success(
+                request, f"'{skill.name}' skill was added successfully")
+            return redirect("my-profile")
+
+    context = {"form": form}
+
+    return render(request, "users/skill_form.html", context)
+
+
+@login_required(login_url="login")
+def update_skill(request, pk):
+    my_profile = request.user.profile
+    modified_skill = my_profile.skill_set.get(id=pk)
+    form = SkillForm(instance=modified_skill)
+
+    if request.method == "POST":
+        form = SkillForm(request.POST, instance=modified_skill)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, f"'{modified_skill.name}' skill was updated")
+            return redirect("my-profile")
+
+    context = {"form": form}
+
+    return render(request, "users/skill_form.html", context)
+
+
+@login_required(login_url="login")
+def delete_skill(request, pk):
+    my_profile = request.user.profile
+    skill_to_delete = my_profile.skill_set.get(id=pk)
+
+    if request.method == "POST":
+        skill_to_delete.delete()
+        messages.success(
+            request, f"'{skill_to_delete.name}' was successfully deleted")
+        return redirect("my-profile")
+
+    context = {"object": skill_to_delete}
+
+    return render(request, "delete_template.html", context)

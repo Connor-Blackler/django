@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from .models import Profile
 
+
 @receiver(post_save, sender=User)
 def user_create(sender, instance, created, **kwargs):
     if created:
@@ -17,6 +18,17 @@ def user_create(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=Profile)
 def profile_deleted(sender, instance, **kwargs):
     print("profile deleted")
-    user = instance.user
     instance.user.delete()
     print("deleting user")
+
+
+@receiver(post_save, sender=Profile)
+def edit_profile(sender, instance, created, **kwargs):
+    if created is False:
+        print("profile edited")
+        profile = instance
+        user = profile.user
+        user.first_name = profile.name
+        user.username = profile.username
+        user.email = profile.email
+        user.save()
