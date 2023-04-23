@@ -13,8 +13,9 @@ from .helpers import search_profiles, paginate_profiles
 
 def profiles(request):
     my_profiles, search = search_profiles(request)
-    custom_range, my_profiles = paginate_profiles(request, my_profiles, 3)
+    custom_range, my_profiles = paginate_profiles(request, my_profiles, 2)
 
+    print(custom_range, my_profiles)
     context = {"profiles": my_profiles,
                "filter": search, "custom_range": custom_range}
     return render(request, 'users/profiles.html', context)
