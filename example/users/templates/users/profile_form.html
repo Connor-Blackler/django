@@ -8,8 +8,7 @@
             <a class="backButton" href="{% url 'my-profile' %}"><i class="fa
                     fa-angle-left fa-2x"></i></a>
             <br>
-            <form class="form" method="POST" action="{% url 'edit-profile' %}"
-                enctype="multipart/form-data">
+            <form class="form" method="POST" action="{% url 'edit-profile' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% for field in form %}
                 <div class="form__field">

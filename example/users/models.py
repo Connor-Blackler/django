@@ -27,6 +27,14 @@ class Profile(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def image_url(self):
+        try:
+            url = self.profile_image.url
+            return url
+        except:
+            return ""
+
     class Meta:
         ordering = [
             "name"

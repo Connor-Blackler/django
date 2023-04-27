@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
-from .models import Project
+from .models import Project, Tag
 from .forms import ProjectForm, ReviewForm
 from .helpers import search_projects, paginate_projects
 
@@ -42,11 +42,15 @@ def create_project(request):
     my_profile = request.user.profile
 
     if request.method == "POST":
+        new_tags = request.POST.get("new_tags").replace(",", " ").split()
         my_form = ProjectForm(request.POST, request.FILES)
         if my_form.is_valid():
             new_project = my_form.save(commit=False)
             new_project.owner = my_profile
             new_project.save()
+            for my_tag in new_tags:
+                my_tag, create = Tag.objects.get_or_create(name=my_tag)
+                new_project.tags.add(my_tag)
             return redirect("my-profile")
 
     context = {"form": my_form}
@@ -61,12 +65,19 @@ def update_project(request, pk):
     my_form = ProjectForm(instance=my_project)
 
     if request.method == "POST":
+        new_tags = request.POST.get("new_tags").replace(",", " ").split()
+        print(new_tags)
         my_form = ProjectForm(request.POST, request.FILES, instance=my_project)
         if my_form.is_valid():
-            my_form.save()
+            new_project = my_form.save()
+            for my_tag in new_tags:
+                my_tag, create = Tag.objects.get_or_create(name=my_tag)
+                new_project.tags.add(my_tag)
+
+            new_project.save()
             return redirect("my-profile")
 
-    context = {"form": my_form}
+    context = {"form": my_form, "project": my_project}
     return render(request, "projects/project_form.html", context)
 
 

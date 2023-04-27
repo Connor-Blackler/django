@@ -17,8 +17,7 @@
                         <label for="formInput#search">Search Developers </label>
                         <input class="input input--text" id="formInput#search"
                             type="text" name="search"
-                            value="{{filter}}" placeholder="Search by developer
-                            name" />
+                            value="{{filter}}" placeholder="Search by developer name" />
                     </div>
 
                     <input class="btn btn--sub btn--lg" type="submit"
@@ -37,7 +36,7 @@
                             class="card__body">
                             <div class="dev__profile">
                                 <img class="avatar avatar--md"
-                                    src="{{profile.profile_image.url}}"
+                                    src="{{profile.image_url}}"
                                     alt="image" />
                                 <div class="dev__meta">
                                     <h3>{{profile.name}}</h3>
@@ -59,7 +58,6 @@
             </div>
         </div>
     </section>
-    {% include 'pagination.html' with query=profiles custom_range=custom_range
-    %}
+    {% include 'pagination.html' with query=profiles custom_range=custom_range %}
 </main>
 {% endblock content %}

@@ -9,8 +9,7 @@
       <h3 class="inbox__title">New Messages(<span>{{unread_count}}</span>)</h3>
       <ul class="messages">
         {% for my_message in all_messages %}
-        <li class="{% if my_message.read == False %}message message--unread{%
-          else %}message{% endif %}">
+        <li class="{% if my_message.read == False %}message message--unread{%else %}message{% endif %}">
           <a href="{% url 'user-message' my_message.id %}">
             <span class="message__author">{{my_message.name}}</span>
             <span class="message__subject">{{my_message.subject}}</span>

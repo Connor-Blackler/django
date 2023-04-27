@@ -7,7 +7,7 @@
       <div class="column column--1of3">
         <div class="card text-center">
           <div class="card__body dev">
-            <img class="avatar avatar--xl" src="{{profile.profile_image.url}}"
+            <img class="avatar avatar--xl" src="{{profile.image_url}}"
               />
             <h2 class="dev__name">{{profile.user}}</h2>
             <p class="dev__title">{{profile.short_intro}}</p>
@@ -91,12 +91,10 @@
               <div class="card project">
                 <a href="{% url 'project' this_project.id %}" class="project">
                   <img class="project__thumbnail"
-                    src="{{this_project.featured_image.url}}" alt="project
-                    thumbnail" />
+                    src="{{this_project.image_url}}" alt="project thumbnail" />
                   <div class="card__body">
                     <h3 class="project__title">{{this_project.title}}</h3>
-                    <p><a class="project__author" href="{% url 'user-profile'
-                        this_project.owner.id %}">{{this_project.owner.name}}</a></p>
+                    <p><a class="project__author" href="{% url 'user-profile' this_project.owner.id %}">{{this_project.owner.name}}</a></p>
                     <p class="project--rating">
                       <span style="font-weight: bold;">{{this_project.vote_ratio}}%</span>Postitive
                       Feedback
